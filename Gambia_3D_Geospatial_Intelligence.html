@@ -1,0 +1,1233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SILKYSINGZ GEOAI | GAMBIA 3D GEOSPATIAL INTELLIGENCE</title>
+
+<link href="https://cdn.maptiler.com/maptiler-sdk-js/v4.2.0/maptiler-sdk.css" rel="stylesheet">
+<script src="https://cdn.maptiler.com/maptiler-sdk-js/v4.2.0/maptiler-sdk.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+  --bg:#081321;
+  --panel:#101e30;
+  --panel2:#15263b;
+  --border:#293d55;
+  --text:#e9f1fa;
+  --muted:#91a7bd;
+  --blue:#39a9ff;
+  --cyan:#24d4cf;
+  --green:#38c98b;
+  --orange:#f2a642;
+  --red:#ef6666;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  overflow:hidden;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+}
+.topbar{
+  min-height:68px;
+  padding:9px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:#0c1929;
+  border-bottom:1px solid var(--border);
+}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:linear-gradient(135deg,#0879c9,#20c9bd);
+  color:#fff;font-weight:900;font-size:19px;
+}
+.brand h1{font-size:15px;margin:0 0 4px}
+.brand p{font-size:10px;color:var(--muted);margin:0}
+.top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.status{
+  display:flex;align-items:center;gap:7px;
+  border:1px solid var(--border);
+  border-radius:20px;padding:8px 11px;
+  font-size:10px;color:var(--muted);
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--orange)}
+.dot.ok{background:var(--green)}
+.btn{
+  background:#1a3049;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:9px 11px;
+  font-size:10px;
+  font-weight:700;
+}
+.btn:hover{border-color:var(--blue);background:#214263}
+.btn.primary{background:#087fc7;border-color:#087fc7;color:white}
+.btn.danger{background:#52262c;border-color:#80404a}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.workspace{
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  padding:9px;
+}
+.panel{
+  min-width:0;min-height:0;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:9px;
+}
+.panel-head{
+  min-height:43px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;
+  padding:11px 13px;
+  background:#122239;
+  border-bottom:1px solid var(--border);
+}
+.panel-head h2{font-size:11px;letter-spacing:.7px;margin:0}
+.panel-head span{font-size:9px;color:var(--muted)}
+.panel-body{
+  flex:1;min-height:0;
+  padding:13px;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#3a526c transparent;
+}
+#mapPanel{position:relative}
+#map{width:100%;height:100%;flex:1;min-height:0;background:#14273a}
+.section{margin-bottom:17px}
+.section-title{
+  margin:0 0 10px;
+  font-size:10px;font-weight:800;
+  letter-spacing:1px;text-transform:uppercase;
+  color:#8ebbe2;
+}
+.field{margin-bottom:11px}
+.field label{
+  display:block;
+  font-size:10px;
+  color:#c2d1df;
+  font-weight:600;
+  margin-bottom:6px;
+}
+.field input,.field select{
+  width:100%;height:36px;
+  border:1px solid #334a63;
+  border-radius:6px;
+  padding:7px 9px;
+  background:#091625;
+  color:var(--text);
+  outline:none;
+  font-size:11px;
+}
+.field input:focus,.field select:focus{border-color:var(--blue)}
+.field input[type="range"]{height:24px;padding:0;accent-color:var(--cyan)}
+.help{
+  font-size:9px;line-height:1.55;
+  color:var(--muted);margin-top:5px;
+}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-row{display:flex;gap:7px;flex-wrap:wrap}
+.btn-row .btn{flex:1}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.check-row{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 0;
+  font-size:10px;color:#c4d3e1;
+}
+.check-row input{accent-color:var(--cyan)}
+.note{
+  padding:10px;
+  border:1px solid #294966;
+  border-radius:7px;
+  background:#142b40;
+  color:#bdd8eb;
+  font-size:10px;
+  line-height:1.6;
+}
+.note.warning{background:#392d1d;border-color:#75552a;color:#f2d7a8}
+.note.success{background:#123429;border-color:#286349;color:#b5ead0}
+.kpi-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:15px;
+}
+.kpi{
+  min-width:0;
+  padding:12px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:7px;
+}
+.kpi .value{font-size:22px;font-weight:800;color:white;overflow-wrap:anywhere}
+.kpi .label{font-size:9px;color:var(--muted);margin-top:5px}
+.kpi .sub{font-size:9px;color:var(--cyan);margin-top:4px}
+.chart-box{
+  padding:10px;
+  background:#0b1828;
+  border:1px solid var(--border);
+  border-radius:7px;
+  margin-bottom:11px;
+}
+.chart-title{font-size:10px;font-weight:700;margin-bottom:9px}
+.chart-wrap{height:155px;position:relative}
+.info-list{list-style:none;margin:0;padding:0}
+.info-list li{
+  padding:8px 0;
+  border-bottom:1px solid #293d55;
+  color:#b8c9d9;
+  font-size:10px;
+  line-height:1.5;
+}
+.info-list li:last-child{border-bottom:0}
+.tag{
+  display:inline-block;
+  margin:2px;
+  padding:4px 7px;
+  border-radius:4px;
+  background:#173e57;
+  color:#9bdcff;
+  font-size:9px;
+  font-weight:700;
+}
+.map-overlay{
+  position:absolute;
+  top:10px;left:10px;right:10px;
+  z-index:5;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:8px;
+  pointer-events:none;
+}
+.map-label{
+  max-width:220px;
+  padding:8px 10px;
+  border-radius:7px;
+  border:1px solid #3a536d;
+  background:rgba(7,18,31,.9);
+  font-size:9px;line-height:1.5;
+}
+.map-label strong{display:block;font-size:10px;color:#fff}
+.map-label small{color:#a9bfd3}
+.map-tools{
+  position:absolute;
+  bottom:12px;left:10px;right:10px;
+  z-index:5;
+  display:flex;gap:6px;flex-wrap:wrap;
+  pointer-events:none;
+}
+.map-tools .btn{
+  pointer-events:auto;
+  background:rgba(8,22,38,.92);
+}
+.map-message{
+  position:absolute;
+  z-index:6;
+  left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:min(330px,86%);
+  padding:19px;
+  text-align:center;
+  border-radius:9px;
+  border:1px solid #38526d;
+  background:rgba(7,18,31,.95);
+  pointer-events:none;
+}
+.map-message h3{font-size:14px;margin:0 0 8px}
+.map-message p{font-size:10px;color:var(--muted);line-height:1.6;margin:0}
+.map-message.hidden{display:none}
+.footer{
+  min-height:30px;
+  padding:7px 14px;
+  display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  background:#0b1726;
+  border-top:1px solid var(--border);
+  color:#8197ad;font-size:9px;
+}
+a{color:#58baff}
+@media(max-width:950px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh}
+  .workspace{display:flex;flex-direction:column}
+  #mapPanel{height:65vh;min-height:430px;order:0}
+  #leftPanel{order:1;min-height:400px}
+  #rightPanel{order:2;min-height:400px}
+  .panel-body{max-height:600px}
+}
+@media(max-width:550px){
+  .topbar{align-items:flex-start;flex-direction:column}
+  .top-actions{width:100%}
+  .workspace{padding:6px;gap:7px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">G</div>
+    <div>
+      <h1>SILKYSINGZ GEOAI | GAMBIA 3D GEOSPATIAL INTELLIGENCE</h1>
+      <p>3D Terrain • Building Visualisation • Satellite Mapping • Spatial Exploration</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <div class="status">
+      <span class="dot" id="connectionDot"></span>
+      <span id="connectionText">Map not connected</span>
+    </div>
+    <button class="btn" id="resetTop">Reset map</button>
+  </div>
+</header>
+
+<main class="workspace">
+
+<!-- LEFT: CONTROLS -->
+<section class="panel" id="leftPanel">
+  <div class="panel-head">
+    <h2>01 | DATA & CONTROLS</h2>
+    <span>Map configuration</span>
+  </div>
+
+  <div class="panel-body">
+
+    <div class="section">
+      <h3 class="section-title">MapTiler connection</h3>
+
+      <div class="field">
+        <label for="apiKey">MapTiler API key</label>
+        <input type="password" id="apiKey" placeholder="Enter your MapTiler API key">
+        <div class="help">
+          A MapTiler key is required to use MapTiler basemaps, terrain and building data.
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn primary" id="connectBtn">Connect & load map</button>
+        <button class="btn" id="showKeyBtn">Show key</button>
+      </div>
+
+      <div class="help" style="margin-top:8px">
+        <a href="https://cloud.maptiler.com/account/keys/" target="_blank" rel="noopener">
+          Get a MapTiler API key ↗
+        </a>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h3 class="section-title">Basemap selection</h3>
+
+      <div class="field">
+        <label for="basemap">Basemap style</label>
+        <select id="basemap" disabled>
+          <option value="HYBRID">Hybrid satellite</option>
+          <option value="SATELLITE">Satellite imagery</option>
+          <option value="STREETS">Streets</option>
+          <option value="TOPO">Topographic</option>
+          <option value="OUTDOOR">Outdoor</option>
+          <option value="BASE">Base map</option>
+        </select>
+      </div>
+
+      <div class="help">
+        Basemap styles are provided by MapTiler. Availability and image detail depend on the service coverage and your API plan.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h3 class="section-title">Gambia area navigation</h3>
+
+      <div class="field">
+        <label for="areaSelect">Select area of interest</label>
+        <select id="areaSelect">
+          <option value="national">The Gambia – National</option>
+          <option value="banjul">Banjul</option>
+          <option value="kanifing">Kanifing</option>
+          <option value="brikama">Brikama</option>
+          <option value="kololi">Kololi</option>
+          <option value="kotu">Kotu</option>
+          <option value="serekunda">Serekunda</option>
+          <option value="lamin">Lamin</option>
+          <option value="farafenni">Farafenni</option>
+          <option value="kerewan">Kerewan</option>
+          <option value="soma">Soma</option>
+          <option value="jan">Janjanbureh</option>
+          <option value="basse">Basse Santa Su</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn primary" id="goAreaBtn">Go to selected area</button>
+        <button class="btn" id="nationalBtn">National view</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h3 class="section-title">3D terrain visualisation</h3>
+
+      <label class="check-row">
+        <input type="checkbox" id="terrainToggle" checked>
+        Enable 3D terrain
+      </label>
+
+      <div class="field">
+        <label for="terrainExaggeration">
+          Terrain exaggeration: <span id="terrainValue">1.0</span>
+        </label>
+        <input type="range" id="terrainExaggeration" min="0.5" max="3" step="0.1" value="1">
+      </div>
+
+      <div class="help">
+        Terrain exaggeration changes the visual vertical scale. It does not change measured elevation values.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h3 class="section-title">3D building visualisation</h3>
+
+      <label class="check-row">
+        <input type="checkbox" id="buildingToggle" checked>
+        Show 3D building extrusions
+      </label>
+
+      <div class="help">
+        Building extrusions depend on building footprints and height attributes in the MapTiler map data. They are not individually surveyed 3D building models.
+      </div>
+
+      <div class="note warning" style="margin-top:9px">
+        <strong>Coverage note</strong><br>
+        Building detail varies by location. Areas without building-height data may show no 3D extrusions.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h3 class="section-title">Camera controls</h3>
+
+      <div class="field">
+        <label for="pitchRange">Camera pitch: <span id="pitchValue">55°</span></label>
+        <input type="range" id="pitchRange" min="0" max="85" value="55">
+      </div>
+
+      <div class="field">
+        <label for="bearingRange">Camera bearing: <span id="bearingValue">0°</span></label>
+        <input type="range" id="bearingRange" min="-180" max="180" value="0">
+      </div>
+
+      <div class="field">
+        <label for="zoomRange">Map zoom: <span id="zoomValue">7.5</span></label>
+        <input type="range" id="zoomRange" min="5" max="20" step="0.1" value="7.5">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn primary" id="view3D">3D perspective</button>
+        <button class="btn" id="view2D">2D perspective</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h3 class="section-title">Map information</h3>
+      <div class="note">
+        This dashboard uses MapTiler's standard map services. It does not require a Gaussian Splat model, a PLY file or a model ID.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CENTRE: MAP -->
+<section class="panel" id="mapPanel">
+  <div class="panel-head">
+    <h2>02 | INTERACTIVE 3D MAP</h2>
+    <span id="areaLabel">The Gambia</span>
+  </div>
+
+  <div id="map">
+    <div class="map-message" id="mapMessage">
+      <h3>Gambia 3D Geospatial Map</h3>
+      <p>Enter your MapTiler API key in the left panel, then select <strong>Connect & load map</strong>.</p>
+    </div>
+  </div>
+
+  <div class="map-overlay">
+    <div class="map-label">
+      <strong>SILKYSINGZ GEOAI | Gambia</strong>
+      <small id="coordinates">13.4500° N | 16.5800° W</small>
+    </div>
+    <div class="map-label">
+      <strong id="mapMode">3D terrain view</strong>
+      <small id="styleLabel">Not connected</small>
+    </div>
+  </div>
+
+  <div class="map-tools">
+    <button class="btn" id="zoomIn">＋ Zoom</button>
+    <button class="btn" id="zoomOut">－ Zoom</button>
+    <button class="btn" id="northUp">↑ North</button>
+    <button class="btn" id="resetMap">Reset view</button>
+  </div>
+</section>
+
+<!-- RIGHT: ANALYTICS -->
+<section class="panel" id="rightPanel">
+  <div class="panel-head">
+    <h2>03 | ANALYTICS & INFORMATION</h2>
+    <span>Live map status</span>
+  </div>
+
+  <div class="panel-body">
+
+    <div class="section">
+      <h3 class="section-title">Map performance indicators</h3>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="value" id="kpiConnection">OFF</div>
+          <div class="label">Map connection</div>
+          <div class="sub" id="kpiConnectionSub">Not connected</div>
+        </div>
+
+        <div class="kpi">
+          <div class="value" id="kpiZoom">7.5</div>
+          <div class="label">Current zoom level</div>
+          <div class="sub">Map camera</div>
+        </div>
+
+        <div class="kpi">
+          <div class="value" id="kpiPitch">55°</div>
+          <div class="label">Camera pitch</div>
+          <div class="sub">Viewing angle</div>
+        </div>
+
+        <div class="kpi">
+          <div class="value" id="kpiTerrain">ON</div>
+          <div class="label">3D terrain</div>
+          <div class="sub">Terrain display state</div>
+        </div>
+
+        <div class="kpi">
+          <div class="value" id="kpiBuildings">ON</div>
+          <div class="label">3D buildings</div>
+          <div class="sub">Extrusion display state</div>
+        </div>
+
+        <div class="kpi">
+          <div class="value" id="kpiStyle">HYBRID</div>
+          <div class="label">Current basemap</div>
+          <div class="sub">Map style</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">Current map view</h3>
+      <ul class="info-list">
+        <li><strong>Selected area:</strong> <span id="infoArea">The Gambia – National</span></li>
+        <li><strong>Longitude:</strong> <span id="infoLongitude">-16.5800</span></li>
+        <li><strong>Latitude:</strong> <span id="infoLatitude">13.4500</span></li>
+        <li><strong>Zoom:</strong> <span id="infoZoom">7.5</span></li>
+        <li><strong>Pitch:</strong> <span id="infoPitch">55°</span></li>
+        <li><strong>Bearing:</strong> <span id="infoBearing">0°</span></li>
+        <li><strong>Last event:</strong> <span id="lastEvent">Waiting for connection</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">Camera configuration</h3>
+
+      <div class="chart-box">
+        <div class="chart-title">Current camera parameters</div>
+        <div class="chart-wrap"><canvas id="cameraChart"></canvas></div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-title">Available navigation locations</div>
+        <div class="chart-wrap"><canvas id="locationChart"></canvas></div>
+        <div class="help">Counts represent destinations configured in this dashboard, not population or settlement statistics.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">Potential applications in The Gambia</h3>
+      <ul class="info-list">
+        <li><strong>Urban planning:</strong> Explore urban form, streets and built-up environments.</li>
+        <li><strong>Infrastructure:</strong> Contextual visualisation of roads and infrastructure.</li>
+        <li><strong>Coastal management:</strong> Visual interpretation of coastal landscapes.</li>
+        <li><strong>Tourism:</strong> Explore towns, landmarks and tourism environments.</li>
+        <li><strong>Statistical geography:</strong> Provide 3D context for census and administrative mapping.</li>
+        <li><strong>Disaster risk:</strong> Support visual inspection and spatial planning.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">Technical status</h3>
+      <div class="note" id="gpuStatus">Checking browser graphics support…</div>
+      <div class="divider"></div>
+      <div class="note warning" id="terrainStatus">
+        Terrain and building visibility depend on MapTiler data coverage, API access and browser performance.
+      </div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">Methodology</h3>
+      <ul class="info-list">
+        <li>MapTiler SDK JS provides the interactive web mapping environment.</li>
+        <li>Satellite and hybrid styles provide imagery-based geographic context.</li>
+        <li>3D terrain uses elevation data where supported by the selected map style and service.</li>
+        <li>Building extrusion visualises building height attributes where those data are available.</li>
+        <li>Camera pitch and bearing provide interactive 3D viewing perspectives.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">Activity log</h3>
+      <div class="note" id="eventLog">Dashboard initialised. Waiting for MapTiler connection.</div>
+    </div>
+
+    <div class="section">
+      <h3 class="section-title">Platform tags</h3>
+      <span class="tag">Gambia</span>
+      <span class="tag">3D GIS</span>
+      <span class="tag">Terrain</span>
+      <span class="tag">Satellite</span>
+      <span class="tag">GeoAI</span>
+      <span class="tag">MapTiler</span>
+      <span class="tag">SILKYSINGZ</span>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <span>Produced by Ansu Singhateh | GIS Analyst | GIS-Cartography Unit | Gambia Bureau of Statistics</span>
+  <span>SILKYSINGZ GEOAI • Research and educational use</span>
+</footer>
+</div>
+
+<script>
+(function(){
+
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const DEFAULT_CENTER = [-16.58,13.45];
+const DEFAULT_ZOOM = 7.5;
+
+const areas = {
+  national:{name:"The Gambia – National",center:[-16.58,13.45],zoom:7.5},
+  banjul:{name:"Banjul",center:[-16.578,13.454],zoom:14},
+  kanifing:{name:"Kanifing",center:[-16.665,13.453],zoom:12},
+  brikama:{name:"Brikama",center:[-16.65,13.271],zoom:13},
+  kololi:{name:"Kololi",center:[-16.718,13.448],zoom:15},
+  kotu:{name:"Kotu",center:[-16.713,13.463],zoom:15},
+  serekunda:{name:"Serekunda",center:[-16.68,13.44],zoom:13},
+  lamin:{name:"Lamin",center:[-16.67,13.43],zoom:14},
+  farafenni:{name:"Farafenni",center:[-15.595,13.568],zoom:13},
+  kerewan:{name:"Kerewan",center:[-16.09,13.49],zoom:13},
+  soma:{name:"Soma",center:[-15.535,13.433],zoom:13},
+  jan:{name:"Janjanbureh",center:[-14.762,13.537],zoom:13},
+  basse:{name:"Basse Santa Su",center:[-14.222,13.31],zoom:13}
+};
+
+let map = null;
+let mapReady = false;
+let cameraChart = null;
+let locationChart = null;
+let currentStyle = "HYBRID";
+let currentArea = "national";
+let buildingLayerAvailable = false;
+let eventCount = 0;
+
+function logEvent(message){
+  $("eventLog").textContent = message;
+  $("lastEvent").textContent = message;
+  eventCount++;
+}
+
+function setConnection(connected,message){
+  $("connectionDot").classList.toggle("ok",connected);
+  $("connectionText").textContent = message;
+  $("kpiConnection").textContent = connected ? "ON" : "OFF";
+  $("kpiConnectionSub").textContent = connected ? "Connected" : "Not connected";
+}
+
+function styleObject(name){
+  const styles = maptilersdk.MapStyle;
+  return styles[name] || styles.HYBRID;
+}
+
+function getStyleName(){
+  return $("basemap").value;
+}
+
+function updateStyleLabels(){
+  const name = getStyleName();
+  $("styleLabel").textContent = name;
+  $("kpiStyle").textContent = name;
+}
+
+function updateCamera(){
+  if(!map || !mapReady) return;
+
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+  const pitch = map.getPitch();
+  const bearing = map.getBearing();
+
+  $("zoomRange").value = zoom;
+  $("pitchRange").value = pitch;
+  $("bearingRange").value = bearing;
+
+  $("zoomValue").textContent = zoom.toFixed(1);
+  $("pitchValue").textContent = Math.round(pitch) + "°";
+  $("bearingValue").textContent = Math.round(bearing) + "°";
+
+  $("kpiZoom").textContent = zoom.toFixed(1);
+  $("kpiPitch").textContent = Math.round(pitch) + "°";
+
+  $("infoZoom").textContent = zoom.toFixed(2);
+  $("infoPitch").textContent = Math.round(pitch) + "°";
+  $("infoBearing").textContent = Math.round(bearing) + "°";
+
+  $("infoLongitude").textContent = center.lng.toFixed(5);
+  $("infoLatitude").textContent = center.lat.toFixed(5);
+
+  $("coordinates").textContent =
+    Math.abs(center.lat).toFixed(4) + "° " +
+    (center.lat >= 0 ? "N" : "S") + " | " +
+    Math.abs(center.lng).toFixed(4) + "° " +
+    (center.lng >= 0 ? "E" : "W");
+
+  if(cameraChart){
+    cameraChart.data.datasets[0].data = [
+      zoom,
+      pitch,
+      Math.abs(bearing)
+    ];
+    cameraChart.update("none");
+  }
+}
+
+function updateTerrainStatus(){
+  const terrain = $("terrainToggle").checked;
+  const buildings = $("buildingToggle").checked;
+
+  $("kpiTerrain").textContent = terrain ? "ON" : "OFF";
+  $("kpiBuildings").textContent = buildings ? "ON" : "OFF";
+  $("mapMode").textContent = terrain ? "3D terrain view" : "Flat terrain view";
+}
+
+function initCharts(){
+  if(typeof Chart === "undefined") return;
+
+  cameraChart = new Chart($("cameraChart"),{
+    type:"bar",
+    data:{
+      labels:["Zoom","Pitch","Bearing"],
+      datasets:[{
+        label:"Camera settings",
+        data:[7.5,55,0],
+        backgroundColor:["#39a9ff","#24d4cf","#38c98b"],
+        borderRadius:5
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:"#a9bbcc",font:{size:9}},grid:{display:false}},
+        y:{beginAtZero:true,ticks:{color:"#91a7bd",font:{size:9}},grid:{color:"#26394e"}}
+      }
+    }
+  });
+
+  locationChart = new Chart($("locationChart"),{
+    type:"doughnut",
+    data:{
+      labels:["National","Greater Banjul / Kombo","Other towns"],
+      datasets:[{
+        data:[1,7,5],
+        backgroundColor:["#39a9ff","#24d4cf","#f2a642"],
+        borderColor:"#101e30",
+        borderWidth:2
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          position:"right",
+          labels:{color:"#b9c9d9",font:{size:9},boxWidth:9}
+        }
+      }
+    }
+  });
+}
+
+function add3DBuildings(){
+  if(!map || !mapReady) return;
+
+  const layerId = "gbos-3d-buildings";
+
+  try{
+    if(map.getLayer(layerId)){
+      buildingLayerAvailable = true;
+      return;
+    }
+
+    const source = map.getSource("maptiler_planet");
+    if(!source){
+      buildingLayerAvailable = false;
+      $("terrainStatus").textContent =
+        "The current style does not expose the MapTiler Planet building source. 3D building extrusions are unavailable in this style or coverage.";
+      return;
+    }
+
+    const layers = map.getStyle().layers || [];
+    let labelLayerId;
+
+    for(let i=0;i<layers.length;i++){
+      if(layers[i].type === "symbol" &&
+         layers[i].layout &&
+         layers[i].layout["text-field"]){
+        labelLayerId = layers[i].id;
+        break;
+      }
+    }
+
+    map.addLayer({
+      id:layerId,
+      source:"maptiler_planet",
+      "source-layer":"building",
+      type:"fill-extrusion",
+      filter:["!",["has","hide_3d"]],
+      minzoom:14,
+      layout:{
+        visibility:$("buildingToggle").checked ? "visible" : "none"
+      },
+      paint:{
+        "fill-extrusion-color":"#c7bda8",
+        "fill-extrusion-height":[
+          "interpolate",["linear"],["zoom"],
+          14,0,
+          15,["coalesce",["get","height"],8]
+        ],
+        "fill-extrusion-base":["coalesce",["get","min_height"],0],
+        "fill-extrusion-opacity":0.72
+      }
+    },labelLayerId);
+
+    buildingLayerAvailable = true;
+    $("terrainStatus").textContent =
+      "3D building extrusion layer added. Building visibility depends on available building footprints and height attributes.";
+    logEvent("3D building layer added where source data are available.");
+
+  }catch(error){
+    buildingLayerAvailable = false;
+    $("terrainStatus").textContent =
+      "3D building layer could not be added for this map style: " + error.message;
+  }
+}
+
+function applyBuildingVisibility(){
+  if(!map || !mapReady) return;
+
+  const layerId = "gbos-3d-buildings";
+
+  if(!map.getLayer(layerId)){
+    if($("buildingToggle").checked) add3DBuildings();
+    return;
+  }
+
+  try{
+    map.setLayoutProperty(
+      layerId,
+      "visibility",
+      $("buildingToggle").checked ? "visible" : "none"
+    );
+    logEvent("3D building visibility updated.");
+  }catch(error){
+    logEvent("Building visibility error: " + error.message);
+  }
+}
+
+function applyTerrain(){
+  if(!map || !mapReady) return;
+
+  const enabled = $("terrainToggle").checked;
+  const exaggeration = Number($("terrainExaggeration").value);
+
+  try{
+    if(enabled){
+      map.enableTerrain({exaggeration:exaggeration});
+    }else{
+      map.disableTerrain();
+    }
+
+    $("terrainValue").textContent = exaggeration.toFixed(1);
+    updateTerrainStatus();
+    logEvent(enabled ? "3D terrain enabled." : "3D terrain disabled.");
+  }catch(error){
+    $("terrainStatus").textContent =
+      "Terrain could not be changed: " + error.message;
+    logEvent("Terrain operation failed: " + error.message);
+  }
+}
+
+function connectMap(){
+  const key = $("apiKey").value.trim();
+
+  if(!key){
+    alert("Enter your MapTiler API key first.");
+    $("apiKey").focus();
+    return;
+  }
+
+  if(typeof maptilersdk === "undefined"){
+    alert("MapTiler SDK did not load. Check your internet connection and reload this HTML file.");
+    return;
+  }
+
+  try{
+    if(map){
+      try{map.remove();}catch(e){}
+      map = null;
+    }
+
+    mapReady = false;
+    setConnection(false,"Connecting…");
+
+    $("mapMessage").classList.remove("hidden");
+    $("mapMessage").innerHTML =
+      "<h3>Connecting to MapTiler</h3><p>Loading the Gambia map…</p>";
+
+    maptilersdk.config.apiKey = key;
+
+    map = new maptilersdk.Map({
+      container:"map",
+      style:maptilersdk.MapStyle.HYBRID,
+      center:DEFAULT_CENTER,
+      zoom:DEFAULT_ZOOM,
+      pitch:55,
+      bearing:0,
+      terrain:true,
+      terrainExaggeration:1,
+      navigationControl:false,
+      geolocateControl:false,
+      scaleControl:false,
+      maptilerLogo:true
+    });
+
+    map.addControl(
+      new maptilersdk.NavigationControl({visualizePitch:true}),
+      "top-right"
+    );
+
+    map.on("load",function(){
+      mapReady = true;
+
+      $("mapMessage").classList.add("hidden");
+      $("basemap").disabled = false;
+
+      setConnection(true,"Map connected");
+      updateStyleLabels();
+      updateCamera();
+      updateTerrainStatus();
+
+      add3DBuildings();
+
+      logEvent("MapTiler map loaded successfully.");
+    });
+
+    map.on("style.load",function(){
+      if(!mapReady) return;
+
+      if($("terrainToggle").checked){
+        try{
+          map.enableTerrain({
+            exaggeration:Number($("terrainExaggeration").value)
+          });
+        }catch(e){}
+      }
+
+      if($("buildingToggle").checked){
+        add3DBuildings();
+      }
+
+      updateStyleLabels();
+    });
+
+    map.on("move",updateCamera);
+    map.on("zoom",updateCamera);
+    map.on("rotate",updateCamera);
+    map.on("pitch",updateCamera);
+
+    map.on("click",function(e){
+      const lng = e.lngLat.lng;
+      const lat = e.lngLat.lat;
+
+      logEvent(
+        "Map clicked at latitude " + lat.toFixed(5) +
+        ", longitude " + lng.toFixed(5) + "."
+      );
+    });
+
+    map.on("error",function(e){
+      const message = e && e.error && e.error.message
+        ? e.error.message
+        : "Map service error";
+
+      logEvent("Map error: " + message);
+    });
+
+    $("mapMessage").classList.add("hidden");
+
+  }catch(error){
+    console.error(error);
+    mapReady = false;
+    setConnection(false,"Connection failed");
+
+    $("mapMessage").classList.remove("hidden");
+    $("mapMessage").innerHTML =
+      "<h3>Map connection failed</h3><p>" +
+      escapeHTML(error.message || "Unknown error") +
+      "<br><br>Check your API key and internet connection.</p>";
+
+    logEvent("Map initialisation failed: " + error.message);
+  }
+}
+
+function escapeHTML(text){
+  return String(text).replace(/[&<>"']/g,function(c){
+    return {
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[c];
+  });
+}
+
+function changeBasemap(){
+  if(!map || !mapReady){
+    alert("Connect to MapTiler first.");
+    return;
+  }
+
+  const selected = getStyleName();
+
+  try{
+    currentStyle = selected;
+    map.setStyle(styleObject(selected));
+    updateStyleLabels();
+    logEvent("Basemap changed to " + selected + ".");
+  }catch(error){
+    logEvent("Basemap change failed: " + error.message);
+    alert("Could not change the basemap. Check the browser console.");
+  }
+}
+
+function goToArea(){
+  if(!map || !mapReady){
+    alert("Connect to MapTiler first.");
+    return;
+  }
+
+  const id = $("areaSelect").value;
+  const area = areas[id];
+
+  if(!area) return;
+
+  currentArea = id;
+
+  map.flyTo({
+    center:area.center,
+    zoom:area.zoom,
+    pitch:55,
+    bearing:0,
+    duration:1800
+  });
+
+  $("areaLabel").textContent = area.name;
+  $("infoArea").textContent = area.name;
+
+  logEvent("Navigated to " + area.name + ".");
+}
+
+function resetMap(){
+  if(!map || !mapReady) return;
+
+  $("areaSelect").value = "national";
+  currentArea = "national";
+
+  map.flyTo({
+    center:DEFAULT_CENTER,
+    zoom:DEFAULT_ZOOM,
+    pitch:55,
+    bearing:0,
+    duration:1500
+  });
+
+  $("areaLabel").textContent = "The Gambia";
+  $("infoArea").textContent = "The Gambia – National";
+
+  $("pitchRange").value = 55;
+  $("bearingRange").value = 0;
+  $("zoomRange").value = DEFAULT_ZOOM;
+
+  logEvent("Map reset to national Gambia view.");
+}
+
+function setPitch(value){
+  $("pitchValue").textContent = value + "°";
+  $("kpiPitch").textContent = value + "°";
+
+  if(map && mapReady) map.setPitch(Number(value));
+}
+
+function setBearing(value){
+  $("bearingValue").textContent = value + "°";
+  if(map && mapReady) map.setBearing(Number(value));
+}
+
+function setZoom(value){
+  $("zoomValue").textContent = Number(value).toFixed(1);
+  $("kpiZoom").textContent = Number(value).toFixed(1);
+
+  if(map && mapReady) map.setZoom(Number(value));
+}
+
+// EVENT LISTENERS
+$("connectBtn").addEventListener("click",connectMap);
+
+$("showKeyBtn").addEventListener("click",function(){
+  const input = $("apiKey");
+  input.type = input.type === "password" ? "text" : "password";
+  $("showKeyBtn").textContent =
+    input.type === "password" ? "Show key" : "Hide key";
+});
+
+$("basemap").addEventListener("change",changeBasemap);
+
+$("goAreaBtn").addEventListener("click",goToArea);
+
+$("nationalBtn").addEventListener("click",function(){
+  $("areaSelect").value = "national";
+  goToArea();
+});
+
+$("terrainToggle").addEventListener("change",applyTerrain);
+
+$("terrainExaggeration").addEventListener("input",function(){
+  $("terrainValue").textContent = Number(this.value).toFixed(1);
+  if(map && mapReady && $("terrainToggle").checked){
+    applyTerrain();
+  }
+});
+
+$("buildingToggle").addEventListener("change",applyBuildingVisibility);
+
+$("pitchRange").addEventListener("input",function(){
+  setPitch(this.value);
+});
+
+$("bearingRange").addEventListener("input",function(){
+  setBearing(this.value);
+});
+
+$("zoomRange").addEventListener("input",function(){
+  setZoom(this.value);
+});
+
+$("view3D").addEventListener("click",function(){
+  if(!map || !mapReady) return alert("Connect to MapTiler first.");
+  $("pitchRange").value = 65;
+  setPitch(65);
+  logEvent("3D camera perspective selected.");
+});
+
+$("view2D").addEventListener("click",function(){
+  if(!map || !mapReady) return alert("Connect to MapTiler first.");
+  $("pitchRange").value = 0;
+  setPitch(0);
+  logEvent("2D camera perspective selected.");
+});
+
+$("zoomIn").addEventListener("click",function(){
+  if(map && mapReady) map.zoomIn();
+});
+
+$("zoomOut").addEventListener("click",function(){
+  if(map && mapReady) map.zoomOut();
+});
+
+$("northUp").addEventListener("click",function(){
+  if(map && mapReady){
+    map.setBearing(0);
+    $("bearingRange").value = 0;
+    $("bearingValue").textContent = "0°";
+  }
+});
+
+$("resetMap").addEventListener("click",resetMap);
+$("resetTop").addEventListener("click",resetMap);
+
+// INITIALISE
+initCharts();
+updateTerrainStatus();
+
+if(!navigator.gpu){
+  $("gpuStatus").textContent =
+    "WebGPU is not detected. The map uses WebGL; 3D terrain and buildings may still work if WebGL and hardware acceleration are supported.";
+}else{
+  $("gpuStatus").textContent =
+    "WebGPU is available in this browser. Map rendering uses the MapTiler SDK graphics engine.";
+}
+
+})();
+</script>
+</body>
+</html>
